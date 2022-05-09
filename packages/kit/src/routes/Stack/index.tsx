@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { AppState, AppStateStatus, Platform } from 'react-native';
@@ -109,6 +109,7 @@ const Dashboard = () => {
 };
 
 const MainScreen = () => {
+  const appState = useRef(AppState.currentState);
   const { dispatch } = backgroundApiProxy;
   const { appLockDuration, enableAppLock } = useSettings();
   const { lastActivity, isUnlock } = useStatus();
@@ -124,25 +125,19 @@ const MainScreen = () => {
 
   const onChange = useCallback(
     (state: AppStateStatus) => {
-      if (appLockDuration === 0) {
-        if (Atom.AppState.isLocked()) {
-          return;
-        }
-        if (state === 'background') {
+      if (Atom.AppState.isLocked()) {
+        return;
+      }
+      if (/background/.exec(appState.current) && state === 'active') {
+        const idleDuration = Math.floor(
+          (Date.now() - lastActivity) / (1000 * 60),
+        );
+        const isStale = idleDuration >= appLockDuration;
+        if (isStale) {
           dispatch(lock());
         }
-        return;
       }
-      if (state !== 'active') {
-        return;
-      }
-      const idleDuration = Math.floor(
-        (Date.now() - lastActivity) / (1000 * 60),
-      );
-      const isStale = idleDuration >= appLockDuration;
-      if (isStale) {
-        dispatch(lock());
-      }
+      appState.current = state;
     },
     [dispatch, appLockDuration, lastActivity],
   );
