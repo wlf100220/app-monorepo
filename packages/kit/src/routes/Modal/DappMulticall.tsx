@@ -5,6 +5,8 @@ import ContractData from '@onekeyhq/kit/src/views/DappModals/ContractData';
 import Multicall from '@onekeyhq/kit/src/views/DappModals/Multicall';
 import TransactionEditFee from '@onekeyhq/kit/src/views/Send/SendEditFee';
 
+import { useOnboarding } from '../../hooks';
+
 import createStackNavigator from './createStackNavigator';
 
 export enum DappMulticallModalRoutes {
@@ -39,6 +41,7 @@ const modalRoutes = [
 
 const DappMulticallStack = () => {
   const isVerticalLayout = useIsVerticalLayout();
+  useOnboarding();
   return (
     <DappMulticallModalNavigator.Navigator
       screenOptions={{

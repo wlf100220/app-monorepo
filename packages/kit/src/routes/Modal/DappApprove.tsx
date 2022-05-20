@@ -6,6 +6,8 @@ import ContractData from '@onekeyhq/kit/src/views/DappModals/ContractData';
 import SpendLimitAmount from '@onekeyhq/kit/src/views/DappModals/SpendLimitAmount';
 import TransactionEditFee from '@onekeyhq/kit/src/views/Send/SendEditFee';
 
+import { useOnboarding } from '../../hooks';
+
 import createStackNavigator from './createStackNavigator';
 
 export enum DappApproveModalRoutes {
@@ -46,6 +48,7 @@ const modalRoutes = [
 
 const DappApproveStack = () => {
   const isVerticalLayout = useIsVerticalLayout();
+  useOnboarding();
   return (
     <DappApproveModalNavigator.Navigator
       screenOptions={{

@@ -3,6 +3,8 @@ import React from 'react';
 import { useIsVerticalLayout } from '@onekeyhq/components';
 import Connection from '@onekeyhq/kit/src/views/DappModals/Connection';
 
+import { useOnboarding } from '../../hooks/useOnboarding';
+
 import createStackNavigator from './createStackNavigator';
 
 export enum DappConnectionModalRoutes {
@@ -25,6 +27,7 @@ const modalRoutes = [
 
 const DappConnectionStack = () => {
   const isVerticalLayout = useIsVerticalLayout();
+  useOnboarding();
   return (
     <DappConnectionModalNavigator.Navigator
       screenOptions={{
