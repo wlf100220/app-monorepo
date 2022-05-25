@@ -5,6 +5,8 @@ import deviceUtils, { BleDevice } from '@onekeyhq/kit/src/utils/ble/utils'
 import { onekeyBleConnect } from '@onekeyhq/kit/src/utils/ble/BleOnekeyConnect';
 import { NordicDFU, DFUEmitter } from "react-native-nordic-dfu";
 import BleManager from 'react-native-ble-manager';
+import platformEnv from '@onekeyhq/shared/src/platformEnv';
+import RNFS from 'react-native-fs';
 
 BleManager.start({ showAlert: false }).then(() => {
   // Success code
@@ -25,9 +27,14 @@ export const DFU = () => {
     setDevices([]);
     setTimeout(() => {
       deviceUtils?.startDeviceScan((_device) => {
-        if (_device && (_device.name?.startsWith('T') || _device.name?.startsWith('K'))) {
-          setDevices(prev => [...prev, _device]);
-        }
+        console.log(devices)
+        setDevices(prev => {
+          if (_device && (_device.name?.startsWith('T') || _device.name?.startsWith('K')) && !prev.find(device => device.id === _device.id)) {
+            return [...prev, _device]
+          }
+          return prev;
+        });
+
       });
     }, 1000)
   }
@@ -47,8 +54,17 @@ export const DFU = () => {
   }
 
   const handlePick = async () => {
-    const url = await DocumentPicker.pick({ type: "public.archive" });
-    setUri(url[0].uri);
+    if (platformEnv.isNativeIOS) {
+      const url = await DocumentPicker.pick({ type: "public.archive" });
+      setUri(url[0].uri);
+    } else if (platformEnv.isNativeAndroid) {
+      const firmwareFile = await DocumentPicker.pick({ type: DocumentPicker.types.zip })
+      const destination = RNFS.CachesDirectoryPath + firmwareFile[0].name;
+
+      await RNFS.copyFile(firmwareFile[0].uri, destination);
+      setUri(destination);
+    }
+
   }
 
   const handleDFU = async () => {
@@ -97,7 +113,7 @@ export const DFU = () => {
           {
             devices.map(device => {
               return (
-                <Button onPress={() => handleDeviceConnect(device.id, device)}>{device.name}</Button>
+                <Button key={device.id} onPress={() => handleDeviceConnect(device.id, device)}>{device.name}</Button>
               )
             })
           }
