@@ -25,7 +25,7 @@ export const DFU = () => {
     setDevices([]);
     setTimeout(() => {
       deviceUtils?.startDeviceScan((_device) => {
-        if (_device && _device.name?.startsWith('T')) {
+        if (_device && (_device.name?.startsWith('T') || _device.name?.startsWith('K'))) {
           setDevices(prev => [...prev, _device]);
         }
       });
