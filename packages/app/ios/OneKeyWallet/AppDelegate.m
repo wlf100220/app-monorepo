@@ -5,11 +5,13 @@
 #import <React/RCTRootView.h>
 #import <React/RCTLinkingManager.h>
 #import <React/RCTConvert.h>
+#import "RNNordicDfu.h"
+#import "BleManager.h"
 
 #if defined(EX_DEV_MENU_ENABLED)
 @import EXDevMenu;
 #endif
- 
+
 #if defined(EX_DEV_LAUNCHER_ENABLED)
 #include <EXDevLauncher/EXDevLauncherController.h>
 #endif
@@ -24,14 +26,14 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
- 
+
 #if defined(EX_DEV_LAUNCHER_ENABLED)
   EXDevLauncherController *controller = [EXDevLauncherController sharedInstance];
   [controller startWithWindow:self.window delegate:(id<EXDevLauncherControllerDelegate>)self launchOptions:launchOptions];
 #else
   [self initializeReactNativeApp:launchOptions];
 #endif
- 
+
 #ifdef DEBUG
 #else
   NSString *version = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"];
@@ -39,11 +41,26 @@
     [FIRApp configure];
   }
 #endif
-  
+
   [super application:application didFinishLaunchingWithOptions:launchOptions];
+  [RNNordicDfu setCentralManagerGetter:^() {
+    return [BleManager getCentralManager];
+  }];
+
+  // Reset manager delegate since the Nordic DFU lib "steals" control over it
+  [RNNordicDfu setOnDFUComplete:^() {
+    NSLog(@"onDFUComplete");
+    CBCentralManager * manager = [BleManager getCentralManager];
+    manager.delegate = [BleManager getInstance];
+  }];
+  [RNNordicDfu setOnDFUError:^() {
+    NSLog(@"onDFUError");
+    CBCentralManager * manager = [BleManager getCentralManager];
+    manager.delegate = [BleManager getInstance];
+  }];
   return YES;
 }
- 
+
 - (RCTBridge *)initializeReactNativeApp:(NSDictionary *)launchOptions
 {
   RCTBridge *bridge = [self.reactDelegate createBridgeWithDelegate:self launchOptions:launchOptions];
@@ -55,7 +72,7 @@
   } else {
     rootView.backgroundColor = [UIColor whiteColor];
   }
-  
+
   UIViewController *rootViewController = [self.reactDelegate createRootViewController];
   rootViewController.view = rootView;
   self.window.rootViewController = rootViewController;
@@ -76,7 +93,7 @@
     return [[EXDevLauncherController sharedInstance] sourceUrl];
   #else
     return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"__generated__/AppEntry.js" fallbackResource:nil];
-  #endif 
+  #endif
  #else
   return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
  #endif
@@ -103,12 +120,12 @@
 
 #if defined(EX_DEV_LAUNCHER_ENABLED)
 @implementation AppDelegate (EXDevLauncherControllerDelegate)
- 
+
 - (void)devLauncherController:(EXDevLauncherController *)developmentClientController
           didStartWithSuccess:(BOOL)success
 {
   developmentClientController.appBridge = [self initializeReactNativeApp:[EXDevLauncherController.sharedInstance getLaunchOptions]];
 }
- 
+
 @end
 #endif

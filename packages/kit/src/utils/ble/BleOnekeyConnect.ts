@@ -34,10 +34,11 @@ class BleOnekeyConnect {
     await this.init();
 
     const features = await OneKeyConnect.getFeatures({ keepSession: false });
-
+    console.log('------features response', JSON.stringify(features))
     if (features.success) {
       return features.payload;
     }
+
     return null;
   }
 

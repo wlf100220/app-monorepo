@@ -177,6 +177,7 @@ class BleUtils {
   }
 
   async startNotification() {
+    console.log('----------------startNotification')
     const transactionId = 'notification';
     const manager = await this.getManager();
     manager.monitorCharacteristicForDevice(

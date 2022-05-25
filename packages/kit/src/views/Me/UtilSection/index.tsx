@@ -55,6 +55,33 @@ export const UtilSection = () => {
           <Icon name="ChevronRightSolid" size={20} />
         </Box>
       </Pressable>
+      <Pressable
+        display="flex"
+        flexDirection="row"
+        justifyContent="space-between"
+        alignItems="center"
+        py={4}
+        px={{ base: 4, md: 6 }}
+        onPress={() => {
+          navigation.navigate(RootRoutes.Modal, {
+            screen: ModalRoutes.DFU,
+            params: { screen: 'DFU' },
+          });
+        }}
+      >
+        <Icon name={small ? 'ScanOutline' : 'ScanSolid'} />
+        <Text
+          typography={{ sm: 'Body1Strong', md: 'Body2Strong' }}
+          flex="1"
+          numberOfLines={1}
+          mx={3}
+        >
+          DFU
+        </Text>
+        <Box>
+          <Icon name="ChevronRightSolid" size={20} />
+        </Box>
+      </Pressable>
     </Box>
   );
 };

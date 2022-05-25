@@ -37,6 +37,7 @@ import SwapModal from './Swap';
 import TransactionDetailModal from './TransactionDetail';
 import UpdateFeatureModal from './UpdateFeature';
 import WatchedAccountModal from './WatchedAccount';
+import DFUModal from './DFU';
 
 export enum ModalNavigatorRoutes {
   ReceiveTokenNavigator = 'ReceiveTokenNavigator',
@@ -47,6 +48,10 @@ const modalStackScreenList = [
   {
     name: ModalRoutes.CreateAccount,
     component: CreateAccountModal,
+  },
+  {
+    name: ModalRoutes.DFU,
+    component: DFUModal,
   },
   {
     name: ModalRoutes.Receive,

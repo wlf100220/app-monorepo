@@ -208,6 +208,8 @@ PODS:
     - GoogleUtilities/Logger
   - GoogleUtilities/UserDefaults (7.7.0):
     - GoogleUtilities/Logger
+  - iOSDFULibrary (4.11.1):
+    - ZIPFoundation (= 0.9.11)
   - IQKeyboardManagerSwift (6.5.4)
   - libwebp (1.2.1):
     - libwebp/demux (= 1.2.1)
@@ -427,6 +429,8 @@ PODS:
   - React-jsinspector (0.66.4)
   - React-logger (0.66.4):
     - glog
+  - react-native-ble-manager (8.1.0):
+    - React-Core
   - react-native-ble-plx (2.0.3):
     - MultiplatformBleAdapter (= 0.1.9)
     - React-Core
@@ -434,8 +438,13 @@ PODS:
     - react-native-config/App (= 1.4.5)
   - react-native-config/App (1.4.5):
     - React-Core
+  - react-native-document-picker (8.1.0):
+    - React-Core
   - react-native-netinfo (8.2.0):
     - React-Core
+  - react-native-nordic-dfu (3.2.1):
+    - iOSDFULibrary (~> 4.11.1)
+    - React
   - react-native-pager-view (5.4.9):
     - React-Core
   - react-native-randombytes (3.6.1):
@@ -567,6 +576,7 @@ PODS:
   - UMTaskManagerInterface (7.1.1):
     - ExpoModulesCore
   - Yoga (1.14.0)
+  - ZIPFoundation (0.9.11)
   - ZXingObjC/Core (3.6.5)
   - ZXingObjC/OneD (3.6.5):
     - ZXingObjC/Core
@@ -621,9 +631,12 @@ DEPENDENCIES:
   - React-jsiexecutor (from `../../../node_modules/react-native/ReactCommon/jsiexecutor`)
   - React-jsinspector (from `../../../node_modules/react-native/ReactCommon/jsinspector`)
   - React-logger (from `../../../node_modules/react-native/ReactCommon/logger`)
+  - react-native-ble-manager (from `../../../node_modules/react-native-ble-manager`)
   - react-native-ble-plx (from `../../../node_modules/react-native-ble-plx`)
   - react-native-config (from `../../../node_modules/react-native-config`)
+  - react-native-document-picker (from `../../../node_modules/react-native-document-picker`)
   - "react-native-netinfo (from `../../../node_modules/@react-native-community/netinfo`)"
+  - react-native-nordic-dfu (from `../../../node_modules/react-native-nordic-dfu`)
   - react-native-pager-view (from `../../../node_modules/react-native-pager-view`)
   - react-native-randombytes (from `../../../node_modules/react-native-randombytes`)
   - react-native-restart (from `../../../node_modules/react-native-restart`)
@@ -663,6 +676,7 @@ SPEC REPOS:
     - GoogleAppMeasurement
     - GoogleDataTransport
     - GoogleUtilities
+    - iOSDFULibrary
     - IQKeyboardManagerSwift
     - libwebp
     - MultiplatformBleAdapter
@@ -670,6 +684,7 @@ SPEC REPOS:
     - PromisesObjC
     - SDWebImage
     - SDWebImageWebPCoder
+    - ZIPFoundation
     - ZXingObjC
 
 EXTERNAL SOURCES:
@@ -761,12 +776,18 @@ EXTERNAL SOURCES:
     :path: "../../../node_modules/react-native/ReactCommon/jsinspector"
   React-logger:
     :path: "../../../node_modules/react-native/ReactCommon/logger"
+  react-native-ble-manager:
+    :path: "../../../node_modules/react-native-ble-manager"
   react-native-ble-plx:
     :path: "../../../node_modules/react-native-ble-plx"
   react-native-config:
     :path: "../../../node_modules/react-native-config"
+  react-native-document-picker:
+    :path: "../../../node_modules/react-native-document-picker"
   react-native-netinfo:
     :path: "../../../node_modules/@react-native-community/netinfo"
+  react-native-nordic-dfu:
+    :path: "../../../node_modules/react-native-nordic-dfu"
   react-native-pager-view:
     :path: "../../../node_modules/react-native-pager-view"
   react-native-randombytes:
@@ -862,6 +883,7 @@ SPEC CHECKSUMS:
   GoogleAppMeasurement: 4c19f031220c72464d460c9daa1fb5d1acce958e
   GoogleDataTransport: 629c20a4d363167143f30ea78320d5a7eb8bd940
   GoogleUtilities: e0913149f6b0625b553d70dae12b49fc62914fd1
+  iOSDFULibrary: 3500ac00451aa7d8ec48a752e91099669a2c1d27
   IQKeyboardManagerSwift: 2dde0fc70110e8eac7ccce2a46fdbec6a850b414
   libwebp: 98a37e597e40bfdb4c911fc98f2c53d0b12d05fc
   lottie-ios: c058aeafa76daa4cf64d773554bccc8385d0150e
@@ -881,9 +903,12 @@ SPEC CHECKSUMS:
   React-jsiexecutor: 94ce921e1d8ce7023366873ec371f3441383b396
   React-jsinspector: d0374f7509d407d2264168b6d0fad0b54e300b85
   React-logger: 933f80c97c633ee8965d609876848148e3fef438
+  react-native-ble-manager: d2ed36acf9051fa0ecf6efb3da5b3570b1e92771
   react-native-ble-plx: f10240444452dfb2d2a13a0e4f58d7783e92d76e
   react-native-config: 6502b1879f97ed5ac570a029961fc35ea606cd14
+  react-native-document-picker: 5663fe4bcdb646200683a41790464d2793307ac8
   react-native-netinfo: e922cb2e3eaf9ccdf16b8d4744a89657377aa4a1
+  react-native-nordic-dfu: 9a4cfa2b940cd12025616feed8271b7c5043113d
   react-native-pager-view: 3ee7d4c7697fb3ef788346e834a60cca97ed8540
   react-native-randombytes: 421f1c7d48c0af8dbcd471b0324393ebf8fe7846
   react-native-restart: 45c8dca02491980f2958595333cbccd6877cb57e
@@ -913,6 +938,7 @@ SPEC CHECKSUMS:
   SDWebImageWebPCoder: f93010f3f6c031e2f8fb3081ca4ee6966c539815
   UMTaskManagerInterface: 3184c93ecc290bd422c6e344badc89b601e9c29b
   Yoga: e7dc4e71caba6472ff48ad7d234389b91dadc280
+  ZIPFoundation: b1f0de4eed33e74a676f76e12559ab6b75990197
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
 PODFILE CHECKSUM: f9ccec2bc87e1f41916536c23ecd19301f8e9486
