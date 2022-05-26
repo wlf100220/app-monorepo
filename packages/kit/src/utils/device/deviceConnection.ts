@@ -9,6 +9,7 @@ import OneKeyConnect from '@onekeyfe/js-sdk';
 import { ToastManager } from '@onekeyhq/components';
 import { navigationRef } from '@onekeyhq/kit/src/provider/NavigationProvider';
 import deviceUtils from '@onekeyhq/kit/src/utils/device/deviceUtils';
+import { get, set } from '@onekeyhq/kit/src/utils/logger';
 import platformEnv from '@onekeyhq/shared/src/platformEnv';
 
 import bleHandler from './ble/handler';
@@ -54,6 +55,7 @@ try {
 }
 
 export const UICallback = (event: any) => {
+  set('[OneKey Connect], UI-EVENT', JSON.stringify(event));
   // console.log('[OneKey Connect], UI-EVENT', JSON.stringify(event));
   const { type } = event;
   switch (type) {
