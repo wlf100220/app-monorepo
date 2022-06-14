@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useMemo, useRef, useState, useCallback } from 'react';
 
 import { CommonActions } from '@react-navigation/native';
 import { Platform, StyleSheet } from 'react-native';
@@ -9,11 +9,17 @@ import Box from '../../Box';
 import Icon from '../../Icon';
 import Pressable from '../../Pressable';
 import { DeviceState } from '../../Provider/device';
-import { useSafeAreaInsets, useUserDevice } from '../../Provider/hooks';
+import {
+  useSafeAreaInsets,
+  useUserDevice,
+  useThemeValue,
+} from '../../Provider/hooks';
 import BottomBarModal from '../BottomBarModal';
 
 import type { ICON_NAMES } from '../../Icon/Icons';
 import type { BottomTabBarProps, TBottomBarRefAttr } from '../BottomTabs/types';
+
+import BottomSheet, { BottomSheetBackdrop } from '@gorhom/bottom-sheet';
 
 const DEFAULT_TABBAR_HEIGHT = 49;
 
@@ -44,6 +50,15 @@ export default function BottomTabBar({
   const { size } = useUserDevice();
   const insets = useSafeAreaInsets();
   const { routes } = state;
+
+  const bottomSheetRef = useRef<BottomSheet>();
+  const handleOpenPress = () => bottomSheetRef?.current?.expand();
+  const handleSheetChanges = useCallback((index: number) => {
+    setFABOpenStatus(index < 0);
+  }, []);
+  const snapPoints = useMemo(() => ['25%', '50%'], []);
+
+  const [sheetBgColor] = useThemeValue(['background-default']);
 
   const paddingBottom = getPaddingBottom(insets);
   const tabBarHeight = getTabBarHeight({
@@ -133,6 +148,7 @@ export default function BottomTabBar({
         bottomBarRef?.current?.open?.();
       }
     };
+
     return [
       ...tabs.slice(0, middleIndex),
       <Box
@@ -148,7 +164,7 @@ export default function BottomTabBar({
           h={12}
           onPress={() => {
             setHaptics();
-            onPress();
+            handleOpenPress();
           }}
           _hover={{ bg: 'surface-hovered' }}
           rounded="full"
@@ -184,13 +200,26 @@ export default function BottomTabBar({
           {tabsWithFloatButton}
         </Box>
       </Box>
-      <BottomBarModal
+      {/* <BottomBarModal
         tabBarHeight={tabBarHeight}
         foldableList={foldableList}
         ref={(el) => (bottomBarRef.current = el || undefined)}
         onOpen={() => setFABOpenStatus(true)}
         onClose={() => setFABOpenStatus(false)}
-      />
+      /> */}
+      <BottomSheet
+        ref={(el) => (bottomSheetRef.current = el || undefined)}
+        index={-1}
+        snapPoints={snapPoints}
+        onAnimate={handleSheetChanges}
+        bottomInset={tabBarHeight}
+        enablePanDownToClose
+        backdropComponent={BottomSheetBackdrop}
+        handleComponent={null}
+        backgroundStyle={{ backgroundColor: sheetBgColor }}
+      >
+        <Box>123</Box>
+      </BottomSheet>
     </>
   );
 }
