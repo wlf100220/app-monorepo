@@ -9,6 +9,7 @@ import {
   Box,
   Button,
   Center,
+  IconButton,
   Keyboard,
   Spinner,
   Text,
@@ -54,9 +55,21 @@ export function PreSendAmountPreview({
   return (
     <Box height="140px">
       {!!title && (
-        <Text textAlign="center" typography="DisplayLarge" color="text-subdued">
-          {title}
-        </Text>
+        <Center flexDirection="row" pl="40px">
+          <Text
+            textAlign="center"
+            typography="DisplayLarge"
+            color="text-subdued"
+          >
+            {title}
+          </Text>
+          <IconButton
+            name="SwitchVerticalOutline"
+            size="lg"
+            type="plain"
+            circle
+          />
+        </Center>
       )}
 
       {/* placeholder={intl.formatMessage({ id: 'content__amount' })} */}
