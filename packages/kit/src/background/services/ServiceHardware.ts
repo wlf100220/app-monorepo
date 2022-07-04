@@ -81,6 +81,8 @@ class ServiceHardware extends ServiceBase {
     const response = await hardwareSDK?.getFeatures(connectId);
 
     if (response.success) {
+      // this.backgroundApi.dispatch(addConnectedConnectId(connectId));
+
       const existsFocused = await this._checkDeviceUpdate(
         hardwareSDK,
         connectId,
@@ -216,7 +218,7 @@ class ServiceHardware extends ServiceBase {
     const { dispatch } = this.backgroundApi;
     dispatch(
       setDeviceUpdates({
-        key: connectId,
+        connectId,
         value: {
           forceFirmware: hasFirmwareForce,
           forceBle: hasBleForce,
@@ -233,7 +235,7 @@ class ServiceHardware extends ServiceBase {
     if (enable) {
       dispatch(
         setDeviceUpdates({
-          key: connectId,
+          connectId,
           value: {
             forceFirmware: hasFirmwareForce,
             forceBle: hasBleForce,
