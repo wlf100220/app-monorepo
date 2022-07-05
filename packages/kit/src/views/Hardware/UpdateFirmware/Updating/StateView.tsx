@@ -16,7 +16,8 @@ export type StateViewType =
   | 'device-connection-failure'
   | 'device-not-response'
   | 'reboot-bootloader-failure'
-  | 'success';
+  | 'success'
+  | 'bluetooth-turned-off';
 
 type StateContent = {
   emoji?: string;
@@ -133,6 +134,17 @@ const StateView: FC<StateViewProps> = ({ stateInfo }) => {
             }),
           };
           break;
+
+        case 'bluetooth-turned-off':
+          stateContent = {
+            emoji: '📡',
+            title: intl.formatMessage({
+              id: 'msg__hardware_bluetooth_need_turned_on_error',
+            }),
+            description: 'Turn on bluetooth and try again.',
+          };
+          break;
+
         default:
           stateContent = {
             emoji: '💀',
@@ -145,8 +157,6 @@ const StateView: FC<StateViewProps> = ({ stateInfo }) => {
 
       return { ...stateContent, ...stateInfo?.content };
     }, [intl, stateInfo]);
-
-  console.log('====:StateView', stateInfo);
 
   return (
     <Box

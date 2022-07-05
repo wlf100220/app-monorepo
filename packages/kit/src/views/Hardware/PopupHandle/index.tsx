@@ -146,6 +146,7 @@ const PopupHandle: FC = () => {
       (async () => {
         if (visible) return;
         dispatch(visibleHardwarePopup(uiRequest));
+        setCurrentPopupType(uiRequest);
 
         const check = await PermissionsAndroid.check(
           PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,

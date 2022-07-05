@@ -16,7 +16,11 @@ import {
 import { ModalScreenProps } from '@onekeyhq/kit/src/routes/types';
 import { setDeviceDoneUpdate } from '@onekeyhq/kit/src/store/reducers/settings';
 import { HardwareSDK } from '@onekeyhq/kit/src/utils/hardware';
-import { NotInBootLoaderMode } from '@onekeyhq/kit/src/utils/hardware/errors';
+import {
+  FirmwareDownloadFailed,
+  NeedBluetoothTurnedOn,
+  NotInBootLoaderMode,
+} from '@onekeyhq/kit/src/utils/hardware/errors';
 import {
   BLEFirmwareInfo,
   SYSFirmwareInfo,
@@ -88,12 +92,6 @@ const UpdatingModal: FC = () => {
     () => progressStep === 'done-step',
     [progressStep],
   );
-  const hasUpdating = useMemo(
-    () =>
-      progressStep === 'installing-firmware' ||
-      progressStep === 'installing-ble',
-    [progressStep],
-  );
 
   const [progress, setProgress] = useState(0);
   const [progressStepDesc, setProgressStepDesc] = useState('Updating...');
@@ -102,15 +100,6 @@ const UpdatingModal: FC = () => {
       switch (step) {
         case 'pre-check':
           return 'Checking...';
-        // case 'downloading-ble':
-        //   return intl.formatMessage(
-        //     { id: 'content__downloading_str' },
-        //     {
-        //       0: intl.formatMessage({
-        //         id: 'content__bluetooth_firmware_lowercase',
-        //       }),
-        //     },
-        //   );
         case 'installing-ble':
           return intl.formatMessage(
             { id: 'content__installing_str' },
@@ -120,15 +109,6 @@ const UpdatingModal: FC = () => {
               }),
             },
           );
-        // case 'downloading-firmware':
-        //   return intl.formatMessage(
-        //     { id: 'content__downloading_str' },
-        //     {
-        //       0: intl.formatMessage({
-        //         id: 'content__firmware_lowercase',
-        //       }),
-        //     },
-        //   );
         case 'reboot-bootloader':
           return '进入 Bootloader 模式...';
         case 'installing-firmware':
@@ -149,7 +129,7 @@ const UpdatingModal: FC = () => {
 
   const [stateViewInfo, setStateViewInfo] = useState<StateViewTypeInfo>();
 
-  const handleInstallError = (currentStep: ProgressStepType, error: Error) => {
+  const handleErrors = (currentStep: ProgressStepType, error: Error) => {
     console.log('install error:', currentStep, error);
 
     if (error instanceof NotInBootLoaderMode) {
@@ -159,7 +139,49 @@ const UpdatingModal: FC = () => {
       return;
     }
 
-    setStateViewInfo({ type: 'install-failure' });
+    if (error instanceof FirmwareDownloadFailed) {
+      let firmwareType = '';
+      if (currentStep === 'installing-ble') {
+        firmwareType = intl.formatMessage({
+          id: 'content__bluetooth_firmware_lowercase',
+        });
+      } else if (currentStep === 'installing-firmware') {
+        firmwareType = intl.formatMessage({
+          id: 'content__firmware_lowercase',
+        });
+      }
+
+      setStateViewInfo({
+        type: 'download-failure',
+        content: {
+          title: intl.formatMessage(
+            { id: 'content__downloading_str' },
+            {
+              0: firmwareType,
+            },
+          ),
+        },
+      });
+    } else if (error instanceof NeedBluetoothTurnedOn) {
+      setStateViewInfo({ type: 'bluetooth-turned-off' });
+    } else if (
+      currentStep === 'installing-ble' ||
+      currentStep === 'installing-firmware'
+    ) {
+      setStateViewInfo({ type: 'install-failure' });
+    } else if (currentStep === 'reboot-bootloader') {
+      setStateViewInfo({ type: 'reboot-bootloader-failure' });
+    }
+
+    if (error instanceof OneKeyHardwareError) {
+      ToastManager.show(
+        {
+          title: intl.formatMessage({ id: error.key }),
+        },
+        { type: 'error' },
+      );
+    }
+
     setProgressState('failure');
   };
 
@@ -244,17 +266,7 @@ const UpdatingModal: FC = () => {
             setProgressState('done');
           })
           .catch((e) => {
-            if (e instanceof OneKeyHardwareError) {
-              ToastManager.show(
-                {
-                  title: intl.formatMessage({ id: e.key }),
-                },
-                { type: 'error' },
-              );
-            }
-
-            setStateViewInfo({ type: 'reboot-bootloader-failure' });
-            setProgressState('failure');
+            handleErrors(progressStep, e);
           });
         break;
 
@@ -273,7 +285,7 @@ const UpdatingModal: FC = () => {
             setProgressState('done');
           })
           .catch((e) => {
-            handleInstallError(progressStep, e);
+            handleErrors(progressStep, e);
           });
         break;
 
@@ -292,7 +304,7 @@ const UpdatingModal: FC = () => {
             setProgressState('done');
           })
           .catch((e) => {
-            handleInstallError(progressStep, e);
+            handleErrors(progressStep, e);
           });
         break;
 
@@ -366,7 +378,7 @@ const UpdatingModal: FC = () => {
       primaryActionTranslationId={
         hasStepDone ? 'action__done' : 'action__retry'
       }
-      headerShown={!hasUpdating}
+      headerShown={false}
       closeAction={() => {
         if (progressState === 'running') {
           HardwareSDK.cancel(connectId);

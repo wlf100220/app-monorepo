@@ -10,21 +10,7 @@ import backgroundApiProxy from '@onekeyhq//kit/src/background/instance/backgroun
 import { OneKeyHardwareError } from '@onekeyhq/engine/src/errors';
 import platformEnv from '@onekeyhq/shared/src/platformEnv';
 
-import {
-  DeviceNotBonded,
-  DeviceNotFind,
-  FirmwareVersionTooLow,
-  InitIframeLoadFail,
-  InitIframeTimeout,
-  InvalidPIN,
-  NeedBluetoothPermissions,
-  NeedBluetoothTurnedOn,
-  NotInBootLoaderMode,
-  OpenBlindSign,
-  UnknownHardwareError,
-  UnknownMethod,
-  UserCancel,
-} from './errors';
+import * as Error from './errors';
 import { getHardwareSDKInstance } from './hardwareInstance';
 
 /**
@@ -147,54 +133,57 @@ class DeviceUtils {
   convertDeviceError(payload: any): OneKeyHardwareError {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const error = payload?.error ?? payload;
-    if (error === null) return new UnknownHardwareError();
-    if (typeof error !== 'string') return new UnknownHardwareError();
+    if (error === null) return new Error.UnknownHardwareError();
+    if (typeof error !== 'string') return new Error.UnknownHardwareError();
 
     if (error.includes('device is not bonded')) {
-      return new DeviceNotBonded();
+      return new Error.DeviceNotBonded();
     }
 
     if (error.includes('Device firmware version is too low')) {
-      return new FirmwareVersionTooLow();
+      return new Error.FirmwareVersionTooLow();
     }
 
     switch (error) {
       case 'Error: Bluetooth required to be turned on':
-        return new NeedBluetoothTurnedOn();
+        return new Error.NeedBluetoothTurnedOn();
 
       case 'BleError: Device is not authorized to use BluetoothLE':
-        return new NeedBluetoothPermissions();
+        return new Error.NeedBluetoothPermissions();
 
       case 'PIN cancelled':
-        return new UserCancel();
+        return new Error.UserCancel();
 
       case 'Action cancelled by user':
-        return new UserCancel();
+        return new Error.UserCancel();
 
       case 'Unknown message':
-        return new UnknownMethod();
+        return new Error.UnknownMethod();
 
       case 'Device Not Found':
-        return new DeviceNotFind();
+        return new Error.DeviceNotFind();
 
       case 'Init_IframeLoadFail':
-        return new InitIframeTimeout();
+        return new Error.InitIframeTimeout();
 
       case 'Init_IframeTimeout':
-        return new InitIframeLoadFail();
+        return new Error.InitIframeLoadFail();
 
       case 'PIN码错误':
       case 'PIN invalid':
-        return new InvalidPIN();
+        return new Error.InvalidPIN();
 
       case 'EIP712 blind sign is disabled':
-        return new OpenBlindSign();
+        return new Error.OpenBlindSign();
 
       case 'ui-device_not_in_bootloader_mode':
-        return new NotInBootLoaderMode();
+        return new Error.NotInBootLoaderMode();
+
+      case 'Method_FirmwareUpdate_DownloadFailed':
+        return new Error.FirmwareDownloadFailed();
 
       default:
-        return new UnknownHardwareError();
+        return new Error.UnknownHardwareError();
     }
   }
 }
