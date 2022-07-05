@@ -31,6 +31,7 @@ type FormItemProps = {
   isLabelAddonActions?: boolean;
   helpText?: string | ((v: any) => string) | ReactElement;
   successMessage?: string | undefined;
+  warningMessage?: string | undefined;
   onLabelAddonPress?: () => void;
   children?: ReactElement<any>;
   formControlProps?: ComponentProps<typeof FormControl>;
@@ -40,6 +41,7 @@ export function FormItem<TFieldValues extends FieldValues = FieldValues>({
   label,
   helpText,
   successMessage,
+  warningMessage,
   children,
   name,
   rules,
@@ -60,6 +62,12 @@ export function FormItem<TFieldValues extends FieldValues = FieldValues>({
   }, []);
   const small = useIsVerticalLayout();
   const intl = useIntl();
+  // eslint-disable-next-line no-nested-ternary
+  const noticeMessage = warningMessage ? (
+    <FormControlMessage type="warning" message={warningMessage} />
+  ) : successMessage ? (
+    <FormControlMessage type="success" message={successMessage} />
+  ) : null;
 
   return (
     <Controller
@@ -175,9 +183,7 @@ export function FormItem<TFieldValues extends FieldValues = FieldValues>({
             {error && error?.message ? (
               <FormControlMessage type="error" message={error?.message} />
             ) : null}
-            {successMessage ? (
-              <FormControlMessage type="success" message={successMessage} />
-            ) : null}
+            {noticeMessage}
           </FormControl>
         );
       }}
